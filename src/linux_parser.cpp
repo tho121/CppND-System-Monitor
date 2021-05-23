@@ -111,7 +111,7 @@ long LinuxParser::UpTime() {
     linestream >> uptime >> idleTime;
   }
 
-    return static_cast<long>(uptime); 
+  return static_cast<long>(uptime); 
 }
 
 // TODO: Read and return the number of jiffies for the system
@@ -128,39 +128,38 @@ long LinuxParser::ActiveJiffies(int pid) {
   long cutime;
   long cstime;
   long starttime;
-  int counter = 0;
 
   std::ifstream filestream(kProcDirectory + std::to_string(pid) + kStatFilename);
   if (filestream.is_open()) {
     while (std::getline(filestream, line)) {
       std::istringstream linestream(line);
       
-      while (linestream >> value) {
-          if(counter == 14)
-          {
-            utime = std::stol(value);
-          }
-          else if(counter == 15)
-          {
-            stime = std::stol(value);
-          }
-          else if(counter == 16)
-          {
-            cutime = std::stol(value);
-          }
-          else if(counter == 17)
-          {
-            cstime = std::stol(value);
-          }
-          else if(counter == 22)
-          {
-            starttime = std::stol(value);
-            
-            //last number we need, early out
-            return utime + stime + cutime + cstime; //+starttime
-          }
+      for (int i = 1; i < 23; ++i) {
+        linestream >> value;
 
-          counter++;
+        if(i == 14)
+        {
+          utime = std::stol(value);
+        }
+        else if(i == 15)
+        {
+          stime = std::stol(value);
+        }
+        else if(i == 16)
+        {
+          cutime = std::stol(value);
+        }
+        else if(i == 17)
+        {
+          cstime = std::stol(value);
+        }
+        else if(i == 22)
+        {
+          starttime = std::stol(value);
+          
+          //last number we need, early out
+          return utime + stime + cutime + cstime + starttime;
+        }
       }
     }
   }
@@ -308,7 +307,7 @@ string LinuxParser::Command(int pid) {
 
 // TODO: Read and return the memory used by a process
 // REMOVE: [[maybe_unused]] once you define the function
-string LinuxParser::Ram(int pid[[maybe_unused]]) { 
+string LinuxParser::Ram(int pid) { 
   
   string line;
   string key;
@@ -386,7 +385,6 @@ long LinuxParser::UpTime(int pid) {
 
   string line;
   string value;
-  int counter = 0;
 
   std::ifstream filestream(kProcDirectory + std::to_string(pid) + kStatFilename);
   if (filestream.is_open()) {
@@ -394,13 +392,13 @@ long LinuxParser::UpTime(int pid) {
       std::istringstream linestream(line);
 
       //the 22nd value is starttime in clockticks
-      while (linestream >> value) {
-          if(counter == 22)
-          {
-            return std::stol(value);
-          }
+      for (int i = 1; i < 23; ++i) {
+        linestream >> value;
 
-          counter++;
+        if(i == 22)
+        {
+          return std::stol(value);
+        }
       }
     }
   }
