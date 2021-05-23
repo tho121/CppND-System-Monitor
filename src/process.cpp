@@ -16,24 +16,34 @@ Process::Process(int pid)
 : pid_(pid)
 , user_(LinuxParser::User(pid))
 , command_(LinuxParser::Command(pid))
-{}
+//, uptimeTick_(LinuxParser::UpTime(pid))
+{
+    uptimeTick_ = UpTime();
+
+}
 
 // TODO: Return this process's ID
 int Process::Pid() const { return pid_; }
 
 // TODO: Return this process's CPU utilization
 float Process::CpuUtilization() { 
+    long currentTick = UpTime();// LinuxParser::UpTime(pid_);
 
-    long activeJiffies = LinuxParser::ActiveJiffies(pid_);
-    long totalJiffies = LinuxParser::Jiffies();
-    
-    double activeDiff = static_cast<double>(LinuxParser::ActiveJiffies(pid_) - prevActiveJiffies_);
-    double totalDiff = static_cast<double>(LinuxParser::Jiffies() - totalJiffies_);
+    if(uptimeTick_ < currentTick)
+    {
+        long activeJiffies = LinuxParser::ActiveJiffies(pid_);
+        long totalJiffies = LinuxParser::Jiffies();
+        
+        double activeDiff = static_cast<double>(LinuxParser::ActiveJiffies(pid_) - prevActiveJiffies_);
+        double totalDiff = static_cast<double>(LinuxParser::Jiffies() - totalJiffies_);
 
-    prevActiveJiffies_ = activeJiffies;
-    totalJiffies_ = totalJiffies;
+        prevActiveJiffies_ = activeJiffies;
+        totalJiffies_ = totalJiffies;
 
-    cpuUtilization_ = static_cast<float>(activeDiff / totalDiff);
+        cpuUtilization_ = static_cast<float>(activeDiff / totalDiff);
+
+        uptimeTick_ = currentTick;
+    }
 
     return cpuUtilization_;   
 }

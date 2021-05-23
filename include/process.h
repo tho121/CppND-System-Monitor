@@ -27,6 +27,7 @@ class Process {
     long prevActiveJiffies_{0};
     long totalJiffies_{0};
     float cpuUtilization_{0};
+    long uptimeTick_{0};
 };
 
 #endif
