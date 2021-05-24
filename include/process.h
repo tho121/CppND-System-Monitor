@@ -11,13 +11,13 @@ class Process {
     Process(int pid);
 
     int Pid() const;                               // TODO: See src/process.cpp
-    std::string User();                      // TODO: See src/process.cpp
-    std::string Command();                   // TODO: See src/process.cpp
-    float CpuUtilization(bool doUpdate);                  // TODO: See src/process.cpp
-    std::string Ram();                       // TODO: See src/process.cpp
-    long int UpTime();                       // TODO: See src/process.cpp
+    std::string User() const;                      // TODO: See src/process.cpp
+    std::string Command() const;                   // TODO: See src/process.cpp
+    float CpuUtilization() const;                  // TODO: See src/process.cpp
+    std::string Ram() const;                       // TODO: See src/process.cpp
+    long int UpTime() const;                       // TODO: See src/process.cpp
     bool operator<(Process const& a) const;  // TODO: See src/process.cpp
-    float LastCpuUtilization() const;
+    void Update(long currentUptime, long totalJiffies = 0);
 
   // TODO: Declare any necessary private members
  private:
@@ -27,6 +27,8 @@ class Process {
     long prevActiveJiffies_{0};
     long prevTotalJiffies_{0};
     float cpuUtilization_{0};
+    std::string ram_{""};
+    long int upTime_{0};
     long uptimeTick_{0};
 };
 

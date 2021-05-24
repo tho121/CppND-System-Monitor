@@ -39,10 +39,13 @@ vector<Process>& System::Processes() {
         }
     }
 
+    long currentUptime = UpTime();
+    long totalJiffies = LinuxParser::Jiffies();
+
     //update cpu utilization before sorting and returning
-    for(auto process : processes_)
+    for(int i = 0; i < processes_.size(); ++i)
     {
-        process.CpuUtilization(true);
+        processes_[i].Update(currentUptime, totalJiffies);
     }
 
     //highest cpu utilization first
