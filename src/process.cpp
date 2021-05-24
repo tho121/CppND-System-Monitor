@@ -26,18 +26,23 @@ Process::Process(int pid)
 int Process::Pid() const { return pid_; }
 
 // TODO: Return this process's CPU utilization
-float Process::CpuUtilization() { 
+float Process::CpuUtilization(bool doUpdate) { 
     
     long uptime = LinuxParser::UpTime();
 
-    if(uptimeTick_ < uptime)
+    if(doUpdate && uptimeTick_ < uptime)
     {
-        long total_time = LinuxParser::ActiveJiffies(pid_);
+        long activeJiffies = LinuxParser::ActiveJiffies(pid_);
+        long totalJiffies = LinuxParser::Jiffies();
+        double process_time = static_cast<double>(activeJiffies - prevActiveJiffies_);
+        double total_time = static_cast<double>(totalJiffies - prevTotalJiffies_);
     
-        double seconds = static_cast<double>(uptime - UpTime());
-        double percentage = static_cast<double>(total_time / sysconf(_SC_CLK_TCK)) / seconds;
+        prevActiveJiffies_ = activeJiffies;
+        prevTotalJiffies_ = totalJiffies;
 
-        cpuUtilization_ = static_cast<float>(percentage);
+        cpuUtilization_ = static_cast<float>(process_time / total_time);
+
+        uptimeTick_ = uptime;
     }
 
     return cpuUtilization_;   
