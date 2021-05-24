@@ -42,7 +42,7 @@ vector<Process>& System::Processes() {
     //update cpu utilization before sorting and returning
     for(auto process : processes_)
     {
-        process.CpuUtilization();
+        process.CpuUtilization(true);
     }
 
     //highest cpu utilization first
