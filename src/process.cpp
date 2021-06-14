@@ -38,7 +38,7 @@ void Process::Update(long currentUptime, long totalJiffies)
 
         //update ram and uptime
         ram_ = LinuxParser::Ram(pid_);
-        upTime_ = LinuxParser::UpTime(pid_) / sysconf(_SC_CLK_TCK);
+        upTime_ = currentUptime - LinuxParser::UpTime(pid_) / sysconf(_SC_CLK_TCK);
         
         lastTick_ = currentUptime;
     }
